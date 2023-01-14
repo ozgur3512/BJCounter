@@ -4,6 +4,7 @@ import styles from "../styles/Home.module.css";
 import Card from "../components/Card";
 import styled from "styled-components";
 import { useState } from "react";
+
 let names = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"];
 let values = {
   A: 1,
@@ -20,46 +21,24 @@ let values = {
   Q: 10,
   K: 10,
 };
-let suits = ["C", "D", "H", "S"];
+let suits = ["C"];
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState([]);
-
+  const DECK_SIZE = 6;
   const [userCards, setUserCards] = useState([]);
-  const [courpierCards, setCourpierCards] = useState([]);
   const [userEnabled, setuserEnabled] = useState(false);
   const [courpierEnabled, setcourpierEnabled] = useState(false);
   const [userPoints, setUserPoints] = useState(0);
-  const [blowChance, setBlowChance] = useState(0);
   const [totalSelectedCards, setTotalSelectedCards] = useState(0);
   const [totalPictureCards, settotalPictureCards] = useState(0);
   const [totalLowCards, settotalLowCards] = useState(0);
   const [totalHighCards, settotalHighCards] = useState(0);
-  const CardDeck = styled.div`
-    width: 100%;
-    padding: 1rem;
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    font-size: 8rem;
-  `;
+  const [totalValue, setTotalValue] = useState(0);
   const CardPicker = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 60%;
-  `;
-  const CardInput = styled.input`
-    width: 100%;
-    height: 3rem;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    font-size: 1.5rem;
-    outline: none;
   `;
 
   const cardChange = (e) => {
@@ -75,8 +54,7 @@ export default function Home() {
     if (
       e.target.id[0] == "7" ||
       e.target.id[0] == "8" ||
-      e.target.id[0] == "9" ||
-      e.target.id[0] == "0"
+      e.target.id[0] == "9"
     ) {
       settotalHighCards(totalHighCards + 1);
     }
@@ -84,9 +62,24 @@ export default function Home() {
       e.target.id[0] == "J" ||
       e.target.id[0] == "Q" ||
       e.target.id[0] == "K" ||
-      e.target.id[0] == "A"
+      e.target.id[0] == "0"
     ) {
+      console.log("here");
       settotalPictureCards(totalPictureCards + 1);
+      if (!(e.target.id[0] == "A")) {
+        setTotalValue(totalValue - 2);
+      }
+    }
+    if (e.target.id[0] == "4" || e.target.id[0] == "5") {
+      setTotalValue(totalValue + 2);
+    }
+    if (
+      e.target.id[0] == "2" ||
+      e.target.id[0] == "3" ||
+      e.target.id[0] == "6" ||
+      e.target.id[0] == "7"
+    ) {
+      setTotalValue(totalValue + 1);
     }
     if (userEnabled) {
       if (Object.keys(userCards).includes(e.target.id)) {
@@ -99,9 +92,7 @@ export default function Home() {
       }
       setUserPoints(userPoints + values[e.target.id[0]]);
     }
-    if (courpierEnabled) {
-      setCourpierCards([...courpierCards, e.target.id]);
-    }
+
     if (selectedCards.find((item) => Object.keys(item)[0] == e.target.id)) {
       setSelectedCards(
         selectedCards.map((item) => {
@@ -123,6 +114,7 @@ export default function Home() {
     settotalPictureCards(0);
     settotalLowCards(0);
     settotalHighCards(0);
+    setTotalValue(0);
   };
   const resetMyCards = () => {
     setUserCards([]);
@@ -132,7 +124,6 @@ export default function Home() {
   };
 
   const enableButton = (e) => {
-    console.log(e.target.id);
     if (e.target.id == "user") {
       setuserEnabled(true);
       if (courpierEnabled) {
@@ -169,7 +160,6 @@ export default function Home() {
     let remainingCards = allCards
       .flat()
       .filter((item) => Object.values(item)[0] > 0);
-    console.log(remainingCards);
     for (const card of remainingCards) {
       let cardId = Object.keys(card)[0];
       let cardValue = values[cardId[0]];
@@ -193,12 +183,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {console.log(selectedCards)}
       <main className="h-screen bg-[#252525] p-5 flex flex-row w-full">
         <div className="flex flex-row justify-around w-[75%] my-5">
           {suits.map((suit, index) => {
             return (
-              <CardDeck key={index}>
+              <div
+                key={index}
+                className="w-full flex relative items-center cursor-pointer text-[8rem] justify-center mx-[2rem] p-[1rem] flex-col"
+              >
                 {names.map((name, cardIndex) => {
                   return (
                     <div
@@ -206,8 +198,8 @@ export default function Home() {
                       id={name + suit}
                       style={
                         selectedCards.includes(name + suit)
-                          ? { top: cardIndex * 55 }
-                          : { top: cardIndex * 55 }
+                          ? { top: cardIndex * 57 }
+                          : { top: cardIndex * 57 }
                       }
                       key={cardIndex}
                       onClick={cardChange}
@@ -217,14 +209,14 @@ export default function Home() {
                           name + suit
                         }.png`}
                         id={name + suit}
-                        height={100}
-                        width={100}
+                        height={150}
+                        width={150}
                       />
                       <div
                         className="bg-[#252525] absolute top-0 right-[3px] rounded-full flex justify-center items-center"
                         id={name + suit}
                         onClick={cardChange}
-                        style={{ width: 25, height: 25 }}
+                        style={{ width: 30, height: 30 }}
                       >
                         <h1 className="text-white absolute text-sm text-center">
                           {selectedCards.find(
@@ -239,7 +231,7 @@ export default function Home() {
                     </div>
                   );
                 })}
-              </CardDeck>
+              </div>
             );
           })}
         </div>
@@ -254,42 +246,146 @@ export default function Home() {
               <span>
                 {totalLowCards > 0
                   ? (
-                      ((100 - totalLowCards) / (260 - totalSelectedCards)) *
+                      ((DECK_SIZE * 20 - totalLowCards) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
                       100
                     ).toFixed(2)
-                  : ((100 / (260 - totalSelectedCards)) * 100).toFixed(2)}
+                  : (
+                      ((DECK_SIZE * 20) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100
+                    ).toFixed(2)}
                 %
+              </span>
+              <span
+                className="text-sm font-bold"
+                style={
+                  (
+                    ((DECK_SIZE * 20 - totalLowCards) /
+                      (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100 -
+                    38.46
+                  ).toFixed(2) < 0
+                    ? { color: "red" }
+                    : { color: "#21db53" }
+                }
+              >
+                {" "}
+                %
+                {(
+                  ((DECK_SIZE * 20 - totalLowCards) /
+                    (DECK_SIZE * 52 - totalSelectedCards)) *
+                    100 -
+                  38.46
+                ).toFixed(2)}
               </span>
             </div>
             <div className="text-[#f0f0f0] font-bold flex flex-row gap-5 h-[35px] items-center">
-              <h1>Chance For 7-8-9-10</h1>
+              <h1>Chance For 7-8-9</h1>
               <span>
                 {totalHighCards > 0
                   ? (
-                      ((80 - totalHighCards) / (260 - totalSelectedCards)) *
+                      ((DECK_SIZE * 12 - totalHighCards) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
                       100
                     ).toFixed(2)
-                  : ((80 / (260 - totalSelectedCards)) * 100).toFixed(2)}
+                  : (
+                      ((DECK_SIZE * 12) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100
+                    ).toFixed(2)}
                 %
+              </span>
+              <span
+                className="text-sm font-bold"
+                style={
+                  (
+                    ((DECK_SIZE * 12 - totalHighCards) /
+                      (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100 -
+                    23.08
+                  ).toFixed(2) < 0
+                    ? { color: "red" }
+                    : { color: "#21db53" }
+                }
+              >
+                {" "}
+                %
+                {(
+                  ((DECK_SIZE * 12 - totalHighCards) /
+                    (DECK_SIZE * 52 - totalSelectedCards)) *
+                    100 -
+                  23.08
+                ).toFixed(2)}
               </span>
             </div>
             <div className="text-[#f0f0f0] font-bold flex flex-row gap-5 h-[35px] items-center ">
-              <h1>Chance For Picture Card</h1>
+              <h1>Chance For Picture Card and 10</h1>
 
               <span>
                 {totalPictureCards > 0
                   ? (
-                      ((80 - totalPictureCards) / (260 - totalSelectedCards)) *
+                      ((DECK_SIZE * 16 - totalPictureCards) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
                       100
                     ).toFixed(2)
-                  : ((80 / (260 - totalSelectedCards)) * 100).toFixed(2)}
+                  : (
+                      ((DECK_SIZE * 16) /
+                        (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100
+                    ).toFixed(2)}
                 %
+              </span>
+
+              <span
+                className="text-sm font-bold"
+                style={
+                  (
+                    ((DECK_SIZE * 16 - totalPictureCards) /
+                      (DECK_SIZE * 52 - totalSelectedCards)) *
+                      100 -
+                    30.77
+                  ).toFixed(2) < 0
+                    ? { color: "red" }
+                    : { color: "#21db53" }
+                }
+              >
+                {" "}
+                %
+                {(
+                  ((DECK_SIZE * 16 - totalPictureCards) /
+                    (DECK_SIZE * 52 - totalSelectedCards)) *
+                    100 -
+                  30.77
+                ).toFixed(2)}
               </span>
             </div>
             <div className="text-[#f0f0f0] font-bold flex flex-row gap-5 h-[35px] items-center">
-              <h1>Total Found Aces</h1>
+              <h1>Remaining Aces</h1>
               <span>
-                {selectedCards.filter((card) => card[0] == "A").length}
+                {DECK_SIZE * 4} /{" "}
+                {selectedCards.filter((card) => Object.keys(card)[0][0] == "A")
+                  .length > 0
+                  ? DECK_SIZE * 4 -
+                    Object.values(
+                      selectedCards.filter(
+                        (card) => Object.keys(card)[0][0] == "A"
+                      )[0]
+                    )[0]
+                  : DECK_SIZE * 4}{" "}
+              </span>
+            </div>
+            <div className="text-[#f0f0f0] font-bold flex flex-row gap-5 h-[35px] items-center">
+              <h1>HI OPT Count</h1>
+              <span>{totalValue}</span>
+            </div>
+            <div className="text-[#f0f0f0] font-bold flex flex-row gap-5 h-[35px] items-center">
+              <h1>True Count</h1>
+              <span>
+                {(
+                  totalValue /
+                  ((DECK_SIZE * 52 - totalSelectedCards) / 52)
+                ).toFixed(2)}
               </span>
             </div>
 

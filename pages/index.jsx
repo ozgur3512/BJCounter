@@ -433,38 +433,6 @@ export default function Home() {
               </button>
             </CardPicker>
             <div style={{ height: "0.2rem" }}></div>
-            <div className="flex flex-row my-5 justify-around">
-              <div>
-                <h1 className="text-md text-[#f0f0f0]">Pick</h1>
-                <h1 className="text-md text-[#f0f0f0]">{userPoints}</h1>
-              </div>
-              <div>
-                <h1 className="text-md text-[#f0f0f0]">Blow Chance On Pick</h1>
-                {calculateChance() > 0 ? (
-                  <h1 className="text-md text-[#f0f0f0]">
-                    {calculateChance().toFixed(2)}%
-                  </h1>
-                ) : (
-                  <h1 className="text-md text-[#f0f0f0]">100% safe pick</h1>
-                )}
-              </div>
-            </div>
-            <div>
-              <h1 className="text-md text-[#f0f0f0]">Your Cards</h1>
-              <div className="flex flex-row gap-5">
-                {userCards.map((card, index) => {
-                  return (
-                    <div key={index}>
-                      <img
-                        src={`https://www.deckofcardsapi.com/static/img/${card}.png`}
-                        height={50}
-                        width={50}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         </div>
       </main>
